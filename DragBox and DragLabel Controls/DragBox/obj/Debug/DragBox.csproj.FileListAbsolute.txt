@@ -1,0 +1,7 @@
+C:\Users\patrickpissurno\Documents\DragBox\DragBox\obj\Debug\DragBox.csprojResolveAssemblyReference.cache
+C:\Users\patrickpissurno\Documents\DragBox\DragBox\bin\Debug\DragBox.dll
+C:\Users\patrickpissurno\Documents\DragBox\DragBox\bin\Debug\DragBox.pdb
+C:\Users\patrickpissurno\Documents\DragBox\DragBox\obj\Debug\DragBox.dll
+C:\Users\patrickpissurno\Documents\DragBox\DragBox\obj\Debug\DragBox.pdb
+C:\Users\patrickpissurno\Documents\DragBox\DragBox\obj\Debug\DragBox.DragBox.resources
+C:\Users\patrickpissurno\Documents\DragBox\DragBox\obj\Debug\DragBox.csproj.GenerateResource.Cache
