@@ -28,8 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.dragBox1 = new DragBox.DragBox();
             this.dragLabel1 = new DragBox.DragLabel();
             this.dragLabel2 = new DragBox.DragLabel();
@@ -99,7 +97,6 @@
 
         #endregion
 
-        private System.Windows.Forms.Timer timer1;
         private DragBox.DragBox dragBox1;
         private DragBox.DragLabel dragLabel1;
         private DragBox.DragLabel dragLabel2;

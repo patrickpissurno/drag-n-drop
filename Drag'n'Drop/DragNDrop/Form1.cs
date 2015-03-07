@@ -55,42 +55,35 @@ namespace DragNDrop
         {
             if (e.Button == MouseButtons.Left)
             {
-                Control control = sender as Control;
-
                 //Define o Parent do Controle como a Form o "puxa" para frente e define sua posição
                 //para o mouse.
-                if (control.Parent.GetType().ToString().Equals("DragBox.DragBox"))
-                {
-                    (control.Parent as DragBox.DragBox).Empty = true;
-                    if ((control.GetType().ToString()).Equals("DragBox.DragLabel"))
-                    {
-                        DragBox.DragLabel dragLabel = control as DragBox.DragLabel;
-                        dragLabel.AutoSize = true;
-                        dragLabel.Linked = false;
-                        dragLabel.Parent = this;
-                    }
-                }
-                control.BringToFront();
-                control.Location = this.PointToClient(Cursor.Position);
+                DragBox.DragLabel dragLabel = sender as DragBox.DragLabel;
+                if(dragLabel.Parent.GetType().ToString().Equals("DragBox.DragBox"))
+                    ((DragBox.DragBox)dragLabel.Parent).Empty = true;
+                dragLabel.AutoSize = true;
+                dragLabel.Linked = false;
+                dragLabel.Parent = this;
+                dragLabel.BringToFront();
+                dragLabel.Location = this.PointToClient(Cursor.Position);
 
                 //Inicia o método Mouse_Up com delay de 0.1s caso o mesmo seja nulo, ou reseta o timer
                 //caso já exista.
                 if (mouseUpTimer == null)
-                    mouseUpTimer = new System.Threading.Timer(obj => { Mouse_Up((Control)sender); }, null, 100, System.Threading.Timeout.Infinite);
+                    mouseUpTimer = new System.Threading.Timer(obj => { Mouse_Up(dragLabel); }, null, 100, System.Threading.Timeout.Infinite);
                 else
                     mouseUpTimer.Change(100, System.Threading.Timeout.Infinite);
             }
         }
 
         //Método de quando um Controle arrastado é solto
-        public void Mouse_Up(Control sender)
+        public void Mouse_Up(DragBox.DragLabel dragLabel)
         {
             //Checa se o método foi chamado de maneira Thread-Safe e caso não tenha sido
             //se chama novamente de maneira thread-safe.
             if (this.InvokeRequired)
             {    
                 Invoke(new MethodInvoker(delegate() {
-                    Mouse_Up(sender);
+                    Mouse_Up(dragLabel);
                 }));
             }
             else
@@ -104,39 +97,30 @@ namespace DragNDrop
                     //"prende" o controle que estava sendo arrastado à ele.
                     mouseUpTimer = null;
                     Control box = this.GetChildAtPoint(this.PointToClient(new Point(Cursor.Position.X - 1, Cursor.Position.Y - 1)));
-                    if (box != null && box != sender)
+                    if (box != null && box != dragLabel && box.GetType().ToString().Equals("DragBox.DragBox"))
                     {
-                        if (box.GetType().ToString().Equals("DragBox.DragBox"))
+                        DragBox.DragBox dragbox = (box as DragBox.DragBox);
+                        if (dragbox.Empty)
                         {
-                            DragBox.DragBox dragbox = (box as DragBox.DragBox);
-                            if (dragbox.Empty)
-                            {
-                                sender.Parent = dragbox;
-                                dragbox.Empty = false;
-                                if ((sender.GetType().ToString()).Equals("DragBox.DragLabel"))
-                                {
-                                    DragBox.DragLabel dragLabel = sender as DragBox.DragLabel;
-                                    dragLabel.AutoSize = false;
-                                    dragLabel.Width = dragLabel.Parent.Width;
-                                    dragLabel.Height = dragLabel.Parent.Height;
-                                    dragLabel.Linked = true;
-                                    dragLabel.Location = new Point(0, 0);
-                                }
-                            }
-                            else
-                            {
-                                if ((sender.GetType().ToString()).Equals("DragBox.DragLabel"))
-                                {
-                                    DragBox.DragLabel dragLabel = sender as DragBox.DragLabel;
-                                    dragLabel.Location = dragLabel.LastLocation;
-                                }
-                            }
+                            dragLabel.Parent = dragbox;
+                            dragbox.Empty = false;
+                            dragLabel.AutoSize = false;
+                            dragLabel.Width = dragLabel.Parent.Width;
+                            dragLabel.Height = dragLabel.Parent.Height;
+                            dragLabel.Linked = true;
+                            dragLabel.Location = new Point(0, 0);
+                        }
+                        else
+                        {
+                            //Caso o DragBox esteja cheio, o DragLabel é movido para sua última posição
+                            dragLabel.Location = dragLabel.LastLocation;
                         }
                     }
                     else
                     {
-                        DragBox.DragLabel dragLabel = sender as DragBox.DragLabel;
-                        dragLabel.LastLocation = this.PointToClient(new Point(Cursor.Position.X - 1, Cursor.Position.Y - 1));
+                        //Caso o DragLabel não tenha sido arrastado para nenhum DragBox,
+                        //sua última posição é atualizada;
+                        dragLabel.LastLocation = this.PointToClient(Cursor.Position);
                     }
                 }
             }
