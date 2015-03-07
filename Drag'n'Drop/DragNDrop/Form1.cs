@@ -27,9 +27,11 @@ namespace DragNDrop
             #region Add Drag Events
             foreach (Control control in this.Controls)
             {
-                if (control != null && control.GetType().ToString().Equals("System.Windows.Forms.Label"))
+                if (control != null && control.GetType().ToString().Equals("DragBox.DragLabel"))
                 {
-                    control.MouseMove += Draggable_Hold;
+                    DragBox.DragLabel dragLabel = (DragBox.DragLabel)control;
+                    dragLabel.MouseMove += Draggable_Hold;
+                    dragLabel.LastLocation = dragLabel.Location;
                 }
             }
             #endregion
@@ -60,10 +62,13 @@ namespace DragNDrop
                 if (control.Parent.GetType().ToString().Equals("DragBox.DragBox"))
                 {
                     (control.Parent as DragBox.DragBox).Empty = true;
-                    if ((control.GetType().ToString()).Equals("System.Windows.Forms.Label"))
-                        (control as Label).AutoSize = true;
-                    control.BackColor = Color.Transparent;
-                    control.Parent = this;
+                    if ((control.GetType().ToString()).Equals("DragBox.DragLabel"))
+                    {
+                        DragBox.DragLabel dragLabel = control as DragBox.DragLabel;
+                        dragLabel.AutoSize = true;
+                        dragLabel.Linked = false;
+                        dragLabel.Parent = this;
+                    }
                 }
                 control.BringToFront();
                 control.Location = this.PointToClient(Cursor.Position);
@@ -108,18 +113,30 @@ namespace DragNDrop
                             {
                                 sender.Parent = dragbox;
                                 dragbox.Empty = false;
-                                if ((sender.GetType().ToString()).Equals("System.Windows.Forms.Label"))
-                                    (sender as Label).AutoSize = false;
-                                sender.Width = sender.Parent.Width;
-                                sender.Height = sender.Parent.Height;
-                                sender.BackColor = Color.FromArgb(255, 196, 13);
-                                sender.Location = new Point(0, 0);
+                                if ((sender.GetType().ToString()).Equals("DragBox.DragLabel"))
+                                {
+                                    DragBox.DragLabel dragLabel = sender as DragBox.DragLabel;
+                                    dragLabel.AutoSize = false;
+                                    dragLabel.Width = dragLabel.Parent.Width;
+                                    dragLabel.Height = dragLabel.Parent.Height;
+                                    dragLabel.Linked = true;
+                                    dragLabel.Location = new Point(0, 0);
+                                }
                             }
                             else
                             {
-                                sender.Location = new Point(box.Location.X + box.Width + 5, box.Location.Y + box.Height + 5);
+                                if ((sender.GetType().ToString()).Equals("DragBox.DragLabel"))
+                                {
+                                    DragBox.DragLabel dragLabel = sender as DragBox.DragLabel;
+                                    dragLabel.Location = dragLabel.LastLocation;
+                                }
                             }
                         }
+                    }
+                    else
+                    {
+                        DragBox.DragLabel dragLabel = sender as DragBox.DragLabel;
+                        dragLabel.LastLocation = this.PointToClient(new Point(Cursor.Position.X - 1, Cursor.Position.Y - 1));
                     }
                 }
             }
